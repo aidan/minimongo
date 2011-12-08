@@ -4,7 +4,7 @@ import copy
 import re
 from bson import DBRef, ObjectId
 from minimongo.collection import DummyCollection
-from minimongo.options import _Options
+from minimongo.options import _Options, deffered_classes
 from pymongo import Connection
 
 
@@ -43,7 +43,13 @@ class ModelBase(type):
             new_class.database = None
             new_class.collection = DummyCollection
             return new_class
-
+        elif options.deffered and not options.configured:
+            deffered_classes.append((mcs, new_class, options, name))
+            return new_class
+        else:
+            return mcs.configure(new_class, options, name, mcs)
+            
+    def configure(new_class, options, name, mcs):
         if not (options.host and options.port and options.database):
             raise Exception(
                 'Model %r improperly configured: %s %s %s' % (

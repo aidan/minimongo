@@ -1,6 +1,9 @@
 import types
 from minimongo.collection import Collection
 
+# classes which have been created but not initialised because the
+# options aren't set
+deffered_classes = []
 
 def configure(module=None, prefix='MONGODB_', **kwargs):
     """Sets defaults for ``class Meta`` declarations.
@@ -65,6 +68,12 @@ class _Options(object):
     # properly in the subclasses.)
     interface = False
 
+    # should collections etc be initialised at class creation or after we've been configured
+    deffered = True
+
+    # have we been configured?
+    configured = False
+
     def __init__(self, meta):
         if meta is not None:
             self.__dict__.update(meta.__dict__)
@@ -74,3 +83,8 @@ class _Options(object):
         """Updates class-level defaults for :class:`_Options` container."""
         for attr, value in defaults.iteritems():
             setattr(cls, attr, value)
+
+        for (mcs, new_class, options, name) in deffered_classes:
+            mcs.configure(new_class, options, name, mcs)
+
+        cls.configured = True
