@@ -31,9 +31,6 @@ class ModelBase(type):
             meta = getattr(new_class, 'Meta')
         except AttributeError:
             meta = None
-        else:
-            delattr(new_class, 'Meta')  # Won't need the original metadata
-                                        # container anymore.
 
         options = _Options(meta)
         options.collection = options.collection or to_underscore(name)
