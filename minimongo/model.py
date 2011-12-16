@@ -7,6 +7,7 @@ from minimongo.collection import DummyCollection
 from minimongo.options import _Options, deffered_classes
 from pymongo import Connection
 
+collection_map = {}
 
 class ModelBase(type):
     """Metaclass for all models.
@@ -69,6 +70,8 @@ class ModelBase(type):
         new_class.database = connection[options.database]
         new_class.collection = options.collection_class(
             new_class.database, options.collection, document_class=new_class)
+
+        collection_map[new_class.collection.name] = new_class
 
         if options.auto_index:
             new_class.auto_index()   # Generating required indices.
