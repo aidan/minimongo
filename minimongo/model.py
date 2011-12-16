@@ -140,7 +140,7 @@ class AttrDict(dict):
     def __setitem__(self, key, value):
         # Coerce all nested dict-valued fields into AttrDicts
         new_value = value
-        if isinstance(value, dict):
+        if isinstance(value, dict) and not isinstance(value, AttrDict):
             new_value = AttrDict(value)
         return super(AttrDict, self).__setitem__(key, new_value)
 
